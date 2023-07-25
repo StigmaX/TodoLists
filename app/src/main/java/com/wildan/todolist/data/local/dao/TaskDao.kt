@@ -1,10 +1,12 @@
-package com.wildan.todolist.room
+package com.wildan.todolist.data.local.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
+import com.wildan.todolist.data.model.Task
 
 @Dao
 interface TaskDao {
@@ -18,5 +20,5 @@ interface TaskDao {
     suspend fun  deleteTask(task: Task)
 
     @Query("SELECT * FROM tasks")
-    suspend fun getAllTasks(): List<Task>
+    fun getAllTasks(): LiveData<List<Task>>
 }
