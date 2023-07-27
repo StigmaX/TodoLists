@@ -11,4 +11,7 @@ class TaskRepository(private val taskDao: TaskDao) {
         taskDao.insertTask(task)
     }
 
+    fun getTasks(): LiveData<List<Task>> {
+        return allTask
+    }
 }

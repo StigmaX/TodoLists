@@ -11,12 +11,10 @@ import kotlinx.coroutines.launch
 
 class AppViewModel(application : Application) : AndroidViewModel(application) {
     private val repository: TaskRepository
-    private val allTask: LiveData<List<Task>>
 
     init {
         val database = AppDatabase.getInstance(application).taskDao()
         repository = TaskRepository(database)
-        allTask = repository.allTask
     }
 
     fun insertTask(task: Task) {
@@ -25,5 +23,8 @@ class AppViewModel(application : Application) : AndroidViewModel(application) {
         }
     }
 
+    fun getTasks(): LiveData<List<Task>> {
+        return repository.getTasks()
+    }
 
 }

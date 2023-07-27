@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">TodoList</string>
+    <string name="empty_list">The list is empty!, stark adding one by tapping the plus button!</string>
 </resources>
