@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -30,6 +31,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelProvider
+import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
+import com.maxkeppeler.sheets.calendar.CalendarDialog
+import com.maxkeppeler.sheets.calendar.models.CalendarSelection
 import com.wildan.todolist.R
 import com.wildan.todolist.data.model.Task
 import com.wildan.todolist.ui.theme.TodoListTheme
@@ -47,7 +51,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    TaskList(viewModel = viewModel)
+                    //TaskList(viewModel = viewModel)
+                    TaskList(appViewModel = viewModel)
                 }
             }
         }
@@ -55,8 +60,8 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun TaskList(viewModel : AppViewModel){
-    val tasklist = viewModel.getTasks()
+fun TaskList(appViewModel : AppViewModel){
+    val tasklist = appViewModel.getTasks()
     val list = tasklist.observeAsState().value
     if (list != null) {
         if(list.isNotEmpty()) {
@@ -66,6 +71,10 @@ fun TaskList(viewModel : AppViewModel){
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(text = it.title)
                             Text(text = it.description)
+                            Text(text = it.dueDate)
+                        }
+                        Row(modifier = Modifier.padding(16.dp)) {
+                            check(it.isCompleted)
                         }
                     }
                 }
@@ -95,6 +104,16 @@ fun AddTask(appViewModel: AppViewModel) {
     var description by remember {
         mutableStateOf("")
     }
+    var date by remember {
+        mutableStateOf("")
+    }
+    val calendarState = rememberUseCaseState(false, true)
+    CalendarDialog(
+        state = calendarState,
+        selection = CalendarSelection.Date{
+            date = it.toString()
+        }
+    )
     Card {
         Column(modifier = Modifier.padding(16.dp)) {
             OutlinedTextField(value = title,
@@ -109,9 +128,22 @@ fun AddTask(appViewModel: AppViewModel) {
                 label = { Text(
                 text = "Description"
             )})
+            Row(modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth()) {
+                Button(onClick = {
+                    calendarState.show()           
+                }) {
+                    Text(text = "Select Date")
+                }
+                Text(modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+                    text = date)
+            }
         }
         Button(onClick = {
-            val task = Task(title = title, description = description)
+            val task = Task(title = title, description = description, dueDate = date, isCompleted = false)
             appViewModel.insertTask(task)
         }, modifier = Modifier.fillMaxWidth())
         {
@@ -119,4 +151,3 @@ fun AddTask(appViewModel: AppViewModel) {
         }
     }
 }
-
